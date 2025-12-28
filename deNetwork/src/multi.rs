@@ -25,6 +25,7 @@ use super::{DeNet, Stats};
 lazy_static! {
     static ref CONNECTIONS: RwLock<Connections> = RwLock::new(Connections::default());
     static ref STATS: Mutex<Stats> = Mutex::new(Stats::default());
+    static ref STREAMS: Mutex<Option<&'static [Option<TcpStream>]>> = Mutex::new(None);
 }
 
 /// Macro for locmaster the FieldChannel singleton in the current scope.
@@ -114,13 +115,13 @@ fn read_to_buffer(
     }
 }
 
-fn write_data(stream: &mut impl Write, channel_id: usize, data: &[u8]) {
+fn write_data(stream: &mut impl Write, channel_id: usize, data: &[u8]) -> std::io::Result<()> {
     // This does not take into account WouldBlock errors (send buffer full?)
     // Hopefully we never write too much data at once
     let channel_id = [channel_id as u8];
     let bytes_size = (data.len() as u64).to_le_bytes();
     let actual_data = [&channel_id[..], &bytes_size[..], data].concat();
-    stream.write_all(&actual_data).unwrap();
+    stream.write_all(&actual_data)
 }
 
 // These worker threads are globals
@@ -143,11 +144,15 @@ fn send_thread(
                         .for_each(|(_, stream)| {
                             // Write each sub-party's data to its own stream
                             let mut stream = stream.as_ref().unwrap();
-                            write_data(&mut stream, channel_id, &bytes_out);
+                            if let Err(e) = write_data(&mut stream, channel_id, &bytes_out) {
+                                debug!("Failed to write to stream: {}", e);
+                            }
                         });
                 } else {
                     let mut stream = streams[0].as_ref().unwrap();
-                    write_data(&mut stream, channel_id, &bytes_out);
+                    if let Err(e) = write_data(&mut stream, channel_id, &bytes_out) {
+                         debug!("Failed to write to stream: {}", e);
+                    }
                 }
             },
 
@@ -160,7 +165,9 @@ fn send_thread(
                     .for_each(|(id, stream)| {
                         // Write each sub-party's data to its own stream
                         let mut stream = stream.as_ref().unwrap();
-                        write_data(&mut stream, channel_id, &bytes_out[id]);
+                        if let Err(e) = write_data(&mut stream, channel_id, &bytes_out[id]) {
+                            debug!("Failed to write to stream: {}", e);
+                        }
                     });
             },
 
@@ -171,18 +178,22 @@ fn send_thread(
                         .enumerate()
                         .filter(|p| p.0 != own_id)
                         .for_each(|(_, stream)| {
-                            stream
+                            if let Err(e) = stream
                                 .as_ref()
                                 .unwrap()
-                                .shutdown(std::net::Shutdown::Both)
-                                .unwrap();
+                                .shutdown(std::net::Shutdown::Both) 
+                            {
+                                debug!("Failed to shutdown stream: {}", e);
+                            }
                         })
                 } else {
-                    streams[0]
+                    if let Err(e) = streams[0]
                         .as_ref()
                         .unwrap()
-                        .shutdown(std::net::Shutdown::Both)
-                        .unwrap();
+                        .shutdown(std::net::Shutdown::Both) 
+                    {
+                        debug!("Failed to shutdown stream: {}", e);
+                    }
                 }
                 return;
             },
@@ -370,7 +381,9 @@ impl Connections {
             .unzip();
         self.recv_channels = recv_recv;
 
-        let streams_ref: &_ = Box::leak(streams);
+        let streams_ref: &'static [Option<TcpStream>] = Box::leak(streams);
+        *STREAMS.lock().unwrap() = Some(streams_ref);
+
         let own_id = self.id;
         self.send_join_handle = Some(thread::spawn(move || {
             send_thread(own_id, streams_ref, send_recv)
@@ -513,6 +526,36 @@ impl Connections {
         // signal that it should exit
         // self.recv_join_handle.take().unwrap().join().unwrap();
     }
+
+    fn get_retransmits(&self) -> u32 {
+        let mut total = 0;
+        if let Some(streams) = *STREAMS.lock().unwrap() {
+            for stream_opt in streams {
+                if let Some(stream) = stream_opt {
+                    #[cfg(target_os = "linux")]
+                    {
+                        use std::os::unix::io::AsRawFd;
+                        let fd = stream.as_raw_fd();
+                        let mut info: libc::tcp_info = unsafe { std::mem::zeroed() };
+                        let mut len = std::mem::size_of::<libc::tcp_info>() as libc::socklen_t;
+                        let r = unsafe {
+                            libc::getsockopt(
+                                fd,
+                                libc::IPPROTO_TCP,
+                                libc::TCP_INFO,
+                                &mut info as *mut _ as *mut libc::c_void,
+                                &mut len,
+                            )
+                        };
+                        if r == 0 {
+                            total += info.tcpi_total_retrans;
+                        }
+                    }
+                }
+            }
+        }
+        total
+    }
 }
 
 pub struct DeMultiNet;
@@ -554,7 +597,9 @@ impl DeNet for DeMultiNet {
 
     #[inline]
     fn stats() -> crate::Stats {
-        STATS.lock().unwrap().clone()
+        let mut stats = STATS.lock().unwrap().clone();
+        stats.retransmissions = get_ch!().get_retransmits();
+        stats
     }
 
     #[inline]

@@ -1,0 +1,6 @@
+target
+.git
+.agent
+package-lock.json
+flake.lock
+*.paras

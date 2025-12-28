@@ -1,0 +1,21 @@
+[package]
+name = "demo-network"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "demo-low"
+path = "src/main.rs"
+
+[[bin]]
+name = "demo-ser"
+path = "src/ser_main.rs"
+
+[dependencies]
+deNetwork = { path = "../deNetwork" }
+ark-serialize = { version = "0.4.0", default-features = false, features = [ "derive" ] }
+ark-ff = { version = "0.4.0", default-features = false }
+ark-ec = { version = "0.4.0", default-features = false }
+ark-bn254 = { version = "0.4.0", default-features = false, features = ["curve"] }
+ark-std = { version = "0.4.0", default-features = false }
+structopt = "0.3"

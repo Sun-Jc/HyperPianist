@@ -16,6 +16,7 @@ pub struct Stats {
     pub broadcasts: usize,
     pub to_master: usize,
     pub from_master: usize,
+    pub retransmissions: u32,
 }
 
 impl std::default::Default for Stats {
@@ -26,6 +27,7 @@ impl std::default::Default for Stats {
             broadcasts: 0,
             to_master: 0,
             from_master: 0,
+            retransmissions: 0,
         }
     }
 }
