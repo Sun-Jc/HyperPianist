@@ -1,6 +1,6 @@
 use crossbeam_channel::{Receiver, Select, Sender};
 use lazy_static::lazy_static;
-use log::{debug, warn};
+use log::{debug, info, warn};
 use mio::{
     net::{TcpListener, TcpStream},
     Events, Interest, Poll, Token,
@@ -172,18 +172,22 @@ fn send_thread(
                         .filter(|p| p.0 != own_id)
                         .for_each(|(_, stream)| {
                             if let Err(e) =
-                                stream.as_ref().unwrap().shutdown(std::net::Shutdown::Both)
+                                stream.as_ref().unwrap().shutdown(std::net::Shutdown::Write)
                             {
                                 warn!("Error shutting down stream from party 0 {e}");
+                            } else {
+                                info!("TCP Stream Write Closed from party 0");
                             }
                         })
                 } else {
                     if let Err(e) = streams[0]
                         .as_ref()
                         .unwrap()
-                        .shutdown(std::net::Shutdown::Both)
+                        .shutdown(std::net::Shutdown::Write)
                     {
                         warn!("Error shutting down stream from party {own_id}: {e}");
+                    } else {
+                        info!("TCP Stream Write Closed from party {own_id}");
                     }
                 }
                 return;
