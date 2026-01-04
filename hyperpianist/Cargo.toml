@@ -19,6 +19,8 @@ transcript = { path = "../transcript" }
 deNetwork = { path = "../deNetwork" }
 util = { path = "../util" }
 lazy_static = "1.5.0"
+log = "0.4"
+env_logger = "0.11"
 
 [dev-dependencies]
 ark-bls12-381 = { version = "0.4.0", default-features = false, features = [ "curve" ] }
@@ -40,6 +42,10 @@ path = "dTests/bench.rs"
 [[example]]
 name = "e2e"
 path = "dTests/e2e.rs"
+
+[[bin]]
+name = "demo-net"
+path = "src/demo_net.rs"
 
 [features]
 # default = [ ]
