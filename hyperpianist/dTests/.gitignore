@@ -1,1 +1,3 @@
 *.paras
+tmp_run.sh
+logs/

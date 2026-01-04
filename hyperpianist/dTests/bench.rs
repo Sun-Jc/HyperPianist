@@ -121,6 +121,11 @@ fn main() {
     // }
 
     Net::deinit();
+    if Net::am_master() {
+        println!("Master finished");
+    } else {
+        println!("Worker finished");
+    }
 }
 
 fn read_dedory_srs() -> Result<DeDorySRS<Bn254>, Box<dyn Error>> {
@@ -320,7 +325,9 @@ where
         gate: &CustomizedGates,
         pcs_srs: &PCS::SRS,
     ) -> Result<(), HyperPlonkErrors> {
+        dbg!(nv);
         let nv = nv - Net::n_parties().log_2();
+        dbg!(nv);
         let repetition = if nv <= 20 {
             20
         } else if nv <= 22 {

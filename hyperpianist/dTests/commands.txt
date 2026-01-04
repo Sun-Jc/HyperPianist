@@ -1,0 +1,16 @@
+EXAMPLE=hyperpianist-bench
+
+cargo build --example hyperpianist-bench --release
+BIN=../../target/release/examples/$EXAMPLE
+
+## Leader
+$BIN 0 "./data/4" 4
+
+## Worker-1
+$BIN 1 "./data/4" 4
+
+## Worker-2
+$BIN 2 "./data/4" 4
+
+## Worker-3
+$BIN 3 "./data/4" 4
