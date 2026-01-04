@@ -13,7 +13,7 @@ pub trait DeSerNet: DeNet {
     #[inline]
     fn broadcast<T: CanonicalDeserialize + CanonicalSerialize>(out: &T) -> Vec<T> {
         let mut bytes_out = Vec::new();
-        out.serialize_compressed(&mut bytes_out).unwrap();
+        out.serialize_uncompressed(&mut bytes_out).unwrap();
         let bytes_in = Self::broadcast_bytes(&bytes_out);
         bytes_in
             .into_iter()
