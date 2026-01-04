@@ -5,13 +5,14 @@ trap "exit" INT TERM
 trap "kill 0" EXIT
 
 cargo build --example $1 --release
-BIN=../target/release/examples/$1
+BIN=../../target/release/examples/$1
 
 PROCS=()
 for i in 0 1 2 3
 do
-  $BIN $i ./dTests/data/4 &
-  #RUST_LOG=debug $BIN $i ./data/4 &
+  # $BIN $i ./dTests/data/4 &
+  # RUST_LOG=debug $BIN $i ./data/4 &
+  RUST_BACKTRACE=1 RUST_LOG=debug $BIN $i "./data/4" 4 &
   pid=$!
   PROCS+=("$pid")
 done

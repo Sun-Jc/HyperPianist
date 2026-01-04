@@ -26,8 +26,8 @@ mod common;
 use common::{d_evaluate_mle, test_rng, test_rng_deterministic};
 
 const SUPPORTED_SIZE: usize = 16;
-const MIN_NUM_VARS: usize = 22;
-const MAX_NUM_VARS: usize = 26;
+// const MIN_NUM_VARS: usize = 22;
+const MAX_NUM_VARS: usize = 10;
 const MIN_CUSTOM_DEGREE: usize = 1;
 const MAX_CUSTOM_DEGREE: usize = 32;
 const HIGH_DEGREE_TEST_NV: usize = 15;
@@ -61,7 +61,8 @@ fn main() {
             Ok(p) => p,
             Err(_e) => {
                 let mut srs_rng = test_rng_deterministic();
-                let srs = DeDory::<Bn254>::gen_srs_for_testing(&mut srs_rng, SUPPORTED_SIZE).unwrap();
+                let srs =
+                    DeDory::<Bn254>::gen_srs_for_testing(&mut srs_rng, SUPPORTED_SIZE).unwrap();
                 let pp = match srs {
                     DeDorySRS::Unprocessed(pp) => pp,
                     _ => panic!("Unexpected processed"),
@@ -90,15 +91,19 @@ fn main() {
 
     if opt.dory {
         if opt.jellyfish {
-            Helper::<DeDory<Bn254>>::bench_jellyfish_plonk(&dedory_pcs_srs, thread, opt.num_vars).unwrap();
+            Helper::<DeDory<Bn254>>::bench_jellyfish_plonk(&dedory_pcs_srs, thread, opt.num_vars)
+                .unwrap();
         } else {
-            Helper::<DeDory<Bn254>>::bench_vanilla_plonk(&dedory_pcs_srs, thread, opt.num_vars).unwrap();
+            Helper::<DeDory<Bn254>>::bench_vanilla_plonk(&dedory_pcs_srs, thread, opt.num_vars)
+                .unwrap();
         }
     } else {
         if opt.jellyfish {
-            Helper::<DeMkzg<Bn254>>::bench_jellyfish_plonk(&deMkzg_pcs_srs, thread, opt.num_vars).unwrap();
+            Helper::<DeMkzg<Bn254>>::bench_jellyfish_plonk(&deMkzg_pcs_srs, thread, opt.num_vars)
+                .unwrap();
         } else {
-            Helper::<DeMkzg<Bn254>>::bench_vanilla_plonk(&deMkzg_pcs_srs, thread, opt.num_vars).unwrap();
+            Helper::<DeMkzg<Bn254>>::bench_vanilla_plonk(&deMkzg_pcs_srs, thread, opt.num_vars)
+                .unwrap();
         }
     }
     // bench_jellyfish_plonk(&pcs_srs, thread).unwrap();
@@ -184,10 +189,7 @@ fn write_deMkzg_srs(
     Ok(())
 }
 
-fn print_stats(
-    before: &Stats,
-    after: &Stats
-) {
+fn print_stats(before: &Stats, after: &Stats) {
     let to_master = after.to_master - before.to_master;
     let from_master = after.from_master - before.from_master;
     let bytes_sent = after.bytes_sent - before.bytes_sent;
@@ -308,11 +310,7 @@ where
         thread: usize,
     ) -> Result<(), HyperPlonkErrors> {
         let vanilla_gate = CustomizedGates::mock_gate(2, degree);
-        Self::bench_mock_circuit_zkp_helper(
-            HIGH_DEGREE_TEST_NV,
-            &vanilla_gate,
-            pcs_srs,
-        )?;
+        Self::bench_mock_circuit_zkp_helper(HIGH_DEGREE_TEST_NV, &vanilla_gate, pcs_srs)?;
 
         Ok(())
     }
@@ -339,7 +337,6 @@ where
         //==========================================================
         // generate pk and vks
         let start = Instant::now();
-        
 
         let stats_a = Net::stats();
         let (pk, vk) = <PolyIOP<Fr> as HyperPlonkSNARK<Bn254, PCS>>::d_preprocess(&index, pcs_srs)?;
@@ -352,11 +349,7 @@ where
         print_stats(&stats_a, &stats_b);
 
         // Re-synchronize
-        Net::recv_from_master_uniform(if Net::am_master() {
-            Some(1usize)
-        } else {
-            None
-        });
+        Net::recv_from_master_uniform(if Net::am_master() { Some(1usize) } else { None });
 
         //==========================================================
         // generate a proof
@@ -387,11 +380,19 @@ where
 
         let mut bytes = Vec::with_capacity(CanonicalSerialize::compressed_size(&proof));
         CanonicalSerialize::serialize_compressed(&proof, &mut bytes).unwrap();
-        println!("proof size for {} variables compressed: {} bytes", nv, bytes.len());
+        println!(
+            "proof size for {} variables compressed: {} bytes",
+            nv,
+            bytes.len()
+        );
 
         let mut bytes = Vec::with_capacity(CanonicalSerialize::uncompressed_size(&proof));
         CanonicalSerialize::serialize_uncompressed(&proof, &mut bytes).unwrap();
-        println!("proof size for {} variables uncompressed: {} bytes", nv, bytes.len());
+        println!(
+            "proof size for {} variables uncompressed: {} bytes",
+            nv,
+            bytes.len()
+        );
 
         let all_pi = Net::send_to_master(&circuit.public_inputs);
 
