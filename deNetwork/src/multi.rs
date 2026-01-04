@@ -171,18 +171,14 @@ fn send_thread(
                         .enumerate()
                         .filter(|p| p.0 != own_id)
                         .for_each(|(_, stream)| {
-                            stream
-                                .as_ref()
-                                .unwrap()
-                                .shutdown(std::net::Shutdown::Both)
-                                .unwrap();
+                            if let Err(e) = stream.as_ref().unwrap().shutdown(std::net::Shutdown::Both) {
+                                println!("Failed to shutdown stream: {}", e);
+                            }
                         })
                 } else {
-                    streams[0]
-                        .as_ref()
-                        .unwrap()
-                        .shutdown(std::net::Shutdown::Both)
-                        .unwrap();
+                    if let Err(e) = streams[0].as_ref().unwrap().shutdown(std::net::Shutdown::Both) {
+                        println!("Failed to shutdown stream: {}", e);
+                    }
                 }
                 return;
             },
