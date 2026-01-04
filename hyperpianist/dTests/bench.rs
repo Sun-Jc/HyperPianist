@@ -26,7 +26,7 @@ mod common;
 use common::{d_evaluate_mle, test_rng, test_rng_deterministic};
 
 const SUPPORTED_SIZE: usize = 16;
-// const MIN_NUM_VARS: usize = 22;
+const MIN_NUM_VARS: usize = 8;
 const MAX_NUM_VARS: usize = 10;
 const MIN_CUSTOM_DEGREE: usize = 1;
 const MAX_CUSTOM_DEGREE: usize = 32;
