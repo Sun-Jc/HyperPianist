@@ -29,9 +29,7 @@ where
         .unzip()
 }
 
-pub fn rand_G_vecs_par<E>(
-    num: usize,
-) -> (Vec<E::G1Affine>, Vec<E::G2Affine>)
+pub fn rand_G_vecs_par<E>(num: usize) -> (Vec<E::G1Affine>, Vec<E::G2Affine>)
 where
     E: Pairing,
 {

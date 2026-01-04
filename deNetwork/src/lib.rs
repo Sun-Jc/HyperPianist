@@ -3,8 +3,8 @@
 pub mod multi;
 pub mod two;
 
-pub use two::DeTwoNet;
 pub use multi::DeMultiNet;
+pub use two::DeTwoNet;
 
 pub mod channel;
 pub use channel::DeSerNet;
@@ -41,8 +41,8 @@ pub trait DeNet {
     /// What is my party number (0 to n-1)?
     fn party_id() -> usize;
     /// Initialize the network layer from a file.
-    /// The file should contain one HOST:PORT setting per line, corresponding to the addresses of
-    /// the parties in increasing order.
+    /// The file should contain one HOST:PORT setting per line, corresponding to
+    /// the addresses of the parties in increasing order.
     ///
     /// Parties are zero-indexed.
     fn init_from_file(path: &str, party_id: usize);
@@ -64,8 +64,8 @@ pub trait DeNet {
 
     fn recv_bytes_from_master_uniform(bytes: Option<Vec<u8>>) -> Vec<u8>;
 
-    /// Everyone sends bytes to the master, who recieves those bytes, runs a computation on them, and
-    /// redistributes the resulting bytes.
+    /// Everyone sends bytes to the master, who recieves those bytes, runs a
+    /// computation on them, and redistributes the resulting bytes.
     ///
     /// The master's computation is given by a function, `f`
     /// proceeds.

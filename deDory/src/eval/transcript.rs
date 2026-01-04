@@ -44,8 +44,9 @@ pub enum MessageLabel {
 }
 
 impl MessageLabel {
-    /// Convert the label to a byte slice, which satisfies the requirements of a merlin label:
-    /// "the labels should be distinct and none should be a prefix of any other."
+    /// Convert the label to a byte slice, which satisfies the requirements of a
+    /// merlin label: "the labels should be distinct and none should be a
+    /// prefix of any other."
     pub fn as_bytes(&self) -> &'static [u8] {
         match self {
             #[cfg(test)]

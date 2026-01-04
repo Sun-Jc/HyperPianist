@@ -6,18 +6,18 @@
 
 //! Prelude
 pub use crate::pcs::{
+    deMultilinear_kzg::{DeMkzg, DeMkzgSRS},
+    dory::{DeDory, DeDorySRS, Dory},
+    dummy::DummyPCS,
     errors::PCSError,
     multilinear_kzg::{
         srs::{MultilinearProverParam, MultilinearUniversalParams, MultilinearVerifierParam},
         MultilinearKzgPCS, MultilinearKzgProof,
     },
-    deMultilinear_kzg::{DeMkzg, DeMkzgSRS},
-    structs::{Commitment, BatchProof},
+    structs::{BatchProof, Commitment},
     univariate_kzg::{
         srs::{UnivariateProverParam, UnivariateUniversalParams, UnivariateVerifierParam},
         UnivariateKzgBatchProof, UnivariateKzgPCS, UnivariateKzgProof,
     },
-    dory::{Dory, DeDory, DeDorySRS},
-    dummy::DummyPCS,
     PolynomialCommitmentScheme, StructuredReferenceString,
 };

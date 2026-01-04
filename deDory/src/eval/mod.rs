@@ -1,5 +1,5 @@
 mod proof;
-pub use proof::{DoryEvalProof, DoryError};
+pub use proof::{DoryError, DoryEvalProof};
 
 mod transcript;
 pub use transcript::MessageLabel;
@@ -14,6 +14,6 @@ mod deProve;
 pub use deProve::de_generate_eval_proof;
 
 mod verify;
-pub use verify::{verify_eval_proof, verify_batched_eval_proof};
+pub use verify::{verify_batched_eval_proof, verify_eval_proof};
 mod deVerify;
 pub use deVerify::verify_de_eval_proof;

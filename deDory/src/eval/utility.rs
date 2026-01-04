@@ -8,12 +8,13 @@ const MIN_PARALLEL_LEN: usize = 16; // The minimum size for which we should actu
 /// Compute the evaluations of the columns of the matrix M that is derived from
 /// `a`.
 pub fn compute_v_vec<F: PrimeField>(a: &[F], L_vec: &[F], num: usize) -> Vec<F> {
-    a.chunks(1 << num)
-        .zip(L_vec.iter())
-        .fold(unsafe_allocate_zero_vec::<F>(1 << num), |mut v, (row, l)| {
+    a.chunks(1 << num).zip(L_vec.iter()).fold(
+        unsafe_allocate_zero_vec::<F>(1 << num),
+        |mut v, (row, l)| {
             v.iter_mut().zip(row).for_each(|(v, a)| *v += *l * a);
             v
-        })
+        },
+    )
 }
 
 /// This method manipulates left and right such that

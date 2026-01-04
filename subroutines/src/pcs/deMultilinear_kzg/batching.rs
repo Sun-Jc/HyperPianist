@@ -11,8 +11,8 @@ use crate::{
     BatchProof, IOPProof,
 };
 use arithmetic::{
-    bit_decompose, build_eq_x_r_vec, build_eq_x_r_with_coeff, math::Math, DenseMultilinearExtension, VPAuxInfo,
-    VirtualPolynomial,
+    bit_decompose, build_eq_x_r_vec, build_eq_x_r_with_coeff, math::Math,
+    DenseMultilinearExtension, VPAuxInfo, VirtualPolynomial,
 };
 use ark_ec::{pairing::Pairing, scalar_mul::variable_base::VariableBaseMSM, CurveGroup};
 use ark_std::{end_timer, log2, start_timer, One, Zero};
@@ -95,7 +95,10 @@ where
         .par_iter_mut()
         .zip(&eq_t_i_list)
         .for_each(|(poly, coeff)| {
-            Arc::make_mut(poly).evaluations.iter_mut().for_each(|eval| *eval *= coeff);
+            Arc::make_mut(poly)
+                .evaluations
+                .iter_mut()
+                .for_each(|eval| *eval *= coeff);
         });
 
     let (mut merged_tilde_gs, merged_tilde_gs_copy) = point_ids
@@ -106,7 +109,10 @@ where
                 let poly = &tilde_gs[idx];
                 *Arc::get_mut(&mut merged_tilde_g).unwrap() += poly.deref();
             }
-            (Arc::new(DenseMultilinearExtension::clone(&merged_tilde_g)), merged_tilde_g)
+            (
+                Arc::new(DenseMultilinearExtension::clone(&merged_tilde_g)),
+                merged_tilde_g,
+            )
         })
         .unzip::<_, _, Vec<_>, Vec<_>>();
     end_timer!(timer);
@@ -133,7 +139,9 @@ where
     let proof = {
         let step = start_timer!(|| "add mle");
         let mut sum_check_vp = VirtualPolynomial::new(num_var);
-        for (merged_tilde_g, tilde_eq) in merged_tilde_gs_copy.into_iter().zip(tilde_eqs.into_iter()) {
+        for (merged_tilde_g, tilde_eq) in
+            merged_tilde_gs_copy.into_iter().zip(tilde_eqs.into_iter())
+        {
             sum_check_vp.add_mle_list([merged_tilde_g, tilde_eq], E::ScalarField::one())?;
         }
         end_timer!(step);

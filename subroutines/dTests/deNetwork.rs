@@ -16,22 +16,14 @@ fn test_send() {
 }
 
 fn test_recv() {
-    let val = Net::recv_from_master_uniform(if Net::am_master() {
-        Some(123u32)
-    } else {
-        None
-    });
+    let val = Net::recv_from_master_uniform(if Net::am_master() { Some(123u32) } else { None });
     assert_eq!(val, 123u32);
 
     let mut data = vec![];
     for i in 0..Net::n_parties() {
         data.push(i as u32);
     }
-    let val = Net::recv_from_master(if Net::am_master() {
-        Some(data)
-    } else {
-        None
-    });
+    let val = Net::recv_from_master(if Net::am_master() { Some(data) } else { None });
     assert_eq!(val, Net::party_id() as u32);
 }
 

@@ -53,7 +53,7 @@ fn test_single_commit<E: Pairing>() -> Result<(), PCSError> {
 
     let params = if Net::am_master() {
         let params = DeDory::<E>::gen_srs_for_testing(&mut rng, 4 + Net::n_parties().log_2())?;
-        let pp  = match &params {
+        let pp = match &params {
             DeDorySRS::Unprocessed(pp) => pp,
             _ => panic!("Unexpected processed"),
         };
@@ -136,7 +136,7 @@ fn test_multi<E: Pairing>() -> Result<(), PCSError> {
 
     let params = if Net::am_master() {
         let params = DeDory::<E>::gen_srs_for_testing(&mut rng, 4 + Net::n_parties().log_2())?;
-        let pp  = match &params {
+        let pp = match &params {
             DeDorySRS::Unprocessed(pp) => pp,
             _ => panic!("Unexpected processed"),
         };

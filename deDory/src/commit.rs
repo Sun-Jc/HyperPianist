@@ -25,12 +25,7 @@ impl<E: Pairing> Default for DoryCommitment<E> {
 }
 
 impl<E: Pairing> DoryCommitment<E> {
-    pub fn commit(
-        witness_matrix: &[E::ScalarField],
-        setup: &ProverSetup<E>,
-        n: usize,
-    ) -> Self
-    {
+    pub fn commit(witness_matrix: &[E::ScalarField], setup: &ProverSetup<E>, n: usize) -> Self {
         // Assume the matrix is well-formed.
         let n_mat = 1usize << (n / 2);
         let n_rows = if witness_matrix.len() == 1usize << n {
@@ -47,7 +42,7 @@ impl<E: Pairing> DoryCommitment<E> {
                 // assert_eq!(n_rows, witness_matrix[i].len());
                 E::G1MSM::msm_unchecked(
                     &setup.Gamma_1.last().unwrap()[..n_mat], /* Gamma_1.last() is the full
-                                                               * vector of Gamma_1 */
+                                                              * vector of Gamma_1 */
                     &witness_matrix[i * n_mat..(i + 1) * n_mat],
                 ) // + setup.H_1 * r_rows[i]
             })

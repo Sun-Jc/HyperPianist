@@ -7,7 +7,7 @@
 use crate::pcs::{PCSError, PolynomialCommitmentScheme};
 use ark_ec::pairing::Pairing;
 use ark_poly::DenseMultilinearExtension;
-use ark_std::{borrow::Borrow, marker::PhantomData, rand::Rng, vec::Vec, sync::Arc};
+use ark_std::{borrow::Borrow, marker::PhantomData, rand::Rng, sync::Arc, vec::Vec};
 use transcript::IOPTranscript;
 
 /// KZG Polynomial Commitment Scheme on multilinear polynomials.

@@ -1,9 +1,11 @@
 use lazy_static::lazy_static;
 use log::debug;
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read, Write};
-use std::net::{SocketAddr, TcpListener, TcpStream};
-use std::sync::Mutex;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader, Read, Write},
+    net::{SocketAddr, TcpListener, TcpStream},
+    sync::Mutex,
+};
 
 use ark_std::{end_timer, start_timer};
 
@@ -85,7 +87,7 @@ impl FieldChannel {
                         } else {
                             panic!("Error during FieldChannel::new: {}", e);
                         }
-                    }
+                    },
                 }
             }
         } else {
@@ -143,28 +145,28 @@ impl FieldChannel {
                     Ok(written) => {
                         bytes_out_offset += written;
                         let _e = s.flush();
-                    }
+                    },
                     Err(e) => {
                         if e.kind() == std::io::ErrorKind::WouldBlock {
                         } else if e.kind() == std::io::ErrorKind::Interrupted {
                         } else {
                             return Err(e);
                         }
-                    }
+                    },
                 }
             }
             if bytes_in_offset < n {
                 match s.read(&mut bytes_in[bytes_in_offset..]) {
                     Ok(read) => {
                         bytes_in_offset += read;
-                    }
+                    },
                     Err(e) => {
                         if e.kind() == std::io::ErrorKind::WouldBlock {
                         } else if e.kind() == std::io::ErrorKind::Interrupted {
                         } else {
                             return Err(e);
                         }
-                    }
+                    },
                 }
             }
         }

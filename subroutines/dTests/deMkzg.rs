@@ -139,7 +139,8 @@ fn test_multi<E: Pairing>() -> Result<(), PCSError> {
 
     let mut srs_rng = test_rng_deterministic();
     let params =
-        DeMkzg::<Bls12_381>::gen_srs_for_testing(&mut srs_rng, 6 + Net::n_parties().log_2()).unwrap();
+        DeMkzg::<Bls12_381>::gen_srs_for_testing(&mut srs_rng, 6 + Net::n_parties().log_2())
+            .unwrap();
     for num_poly in 4..6 {
         for nv in 4..6 {
             let polys1: Vec<_> = (0..num_poly)

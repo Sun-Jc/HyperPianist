@@ -38,7 +38,11 @@ pub fn bind_poly_var_bot<F: PrimeField>(poly: &mut DenseMultilinearExtension<F>,
     poly.evaluations.truncate(n);
 }
 
-pub fn bind_poly_var_bot_par<F: PrimeField>(poly: &mut DenseMultilinearExtension<F>, r: &F, concurrency: usize) {
+pub fn bind_poly_var_bot_par<F: PrimeField>(
+    poly: &mut DenseMultilinearExtension<F>,
+    r: &F,
+    concurrency: usize,
+) {
     let n = poly.evaluations.len() / 2;
     let mut chunk_size = (poly.evaluations.len() + concurrency - 1) / concurrency;
     if chunk_size == 0 || chunk_size % 2 == 1 {
@@ -370,11 +374,11 @@ fn fix_last_variable_helper<F: PrimeField>(data: &[F], nv: usize, point: &F) -> 
 }
 
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::{bind_poly_var_bot, bind_poly_var_bot_par};
     use ark_bls12_381::Fr;
-    use ark_std::{test_rng, UniformRand};
     use ark_poly::{DenseMultilinearExtension, MultilinearExtension};
+    use ark_std::{test_rng, UniformRand};
 
     #[test]
     fn test_bind_poly_var_bot() {

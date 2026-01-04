@@ -63,7 +63,6 @@ impl<E: Pairing> PublicParameters<E> {
     }
 }
 
-
 #[derive(Debug, Clone, CanonicalSerialize, CanonicalDeserialize)]
 pub struct SubProverSetup<E: Pairing> {
     /// `Gamma_1[k]` = Γ_1,(m-k) in the Dory paper.
@@ -87,9 +86,7 @@ impl_serde_for_ark_serde_unchecked!(SubProverSetup);
 impl<E: Pairing> SubProverSetup<E> {
     /// Create a new `ProverSetup` from the public parameters.
 
-    pub fn new(
-        pp: &PublicParameters<E>, 
-    ) -> Self {
+    pub fn new(pp: &PublicParameters<E>) -> Self {
         assert_eq!(pp.Gamma_1.len(), 1 << pp.max_num);
         assert_eq!(pp.Gamma_2.len(), 1 << pp.max_num);
 
@@ -103,11 +100,9 @@ impl<E: Pairing> SubProverSetup<E> {
         }
     }
 
-    /// Create a new `ProverSetup` from the public parameters and write it to a file.
-    pub fn new_to_file(
-        pp: &PublicParameters<E>, 
-        file_path: &str
-    ) -> Result<(), Box<dyn Error>> {
+    /// Create a new `ProverSetup` from the public parameters and write it to a
+    /// file.
+    pub fn new_to_file(pp: &PublicParameters<E>, file_path: &str) -> Result<(), Box<dyn Error>> {
         let setup = Self::new(pp);
         let file = std::fs::File::create(file_path)?;
         let writer = std::io::BufWriter::new(file);
@@ -115,16 +110,13 @@ impl<E: Pairing> SubProverSetup<E> {
         Ok(())
     }
 
-    pub fn read_from_file(
-        file_path: &str
-    ) -> Result<Self, Box<dyn Error>> {
+    pub fn read_from_file(file_path: &str) -> Result<Self, Box<dyn Error>> {
         let file = std::fs::File::open(file_path)?;
         let reader = std::io::BufReader::new(file);
         let setup = bincode::deserialize_from(reader)?;
         Ok(setup)
     }
 }
-
 
 /// The transparent setup information that the verifier must know to verify a
 /// proof. This is public knowledge and must match with the prover's setup
@@ -175,56 +167,57 @@ impl_serde_for_ark_serde_unchecked!(VerifierSetup);
 
 impl<E: Pairing> VerifierSetup<E> {
     /// Create a new `VerifierSetup` from the public parameters.
-    pub fn new(
-        pp: &PublicParameters<E>,
-    ) -> Self {
+    pub fn new(pp: &PublicParameters<E>) -> Self {
         assert_eq!(pp.Gamma_1.len(), 1 << pp.max_num);
         assert_eq!(pp.Gamma_2.len(), 1 << pp.max_num);
         let ((Delta_1L_2L, Delta_1R), (Delta_2R, chi)): ((Vec<_>, Vec<_>), (Vec<_>, Vec<_>)) =
-            rayon::join(|| {
-                (0..pp.max_num + 1)
-                    .into_par_iter()
-                    .map(|k| {
-                        if k == 0 {
-                            (
-                                PairingOutput(One::one()),
-                                PairingOutput(One::one()),
-                            )
-                        } else {
-                            (
-                                Pairing::multi_pairing(
-                                    &pp.Gamma_1[..1 << (k - 1)],
-                                    &pp.Gamma_2[..1 << (k - 1)],
-                                ),
-                                Pairing::multi_pairing(
-                                    &pp.Gamma_1[1 << (k - 1)..1 << k],
-                                    &pp.Gamma_2[..1 << (k - 1)],
-                                ),
-                            )
-                        }
-                    })
-                    .unzip()
-            }, || {
-                (0..pp.max_num + 1)
-                    .into_par_iter()
-                    .map(|k| {
-                        if k == 0 {
-                            (
-                                PairingOutput(One::one()),
-                                Pairing::pairing(pp.Gamma_1[0], pp.Gamma_2[0]),
-                            )
-                        } else {
-                            (
-                                Pairing::multi_pairing(
-                                    &pp.Gamma_1[..1 << (k - 1)],
-                                    &pp.Gamma_2[1 << (k - 1)..1 << k],
-                                ),
-                                Pairing::multi_pairing(&pp.Gamma_1[..1 << k], &pp.Gamma_2[..1 << k]),
-                            )
-                        }
-                    })
-                    .unzip()
-            });
+            rayon::join(
+                || {
+                    (0..pp.max_num + 1)
+                        .into_par_iter()
+                        .map(|k| {
+                            if k == 0 {
+                                (PairingOutput(One::one()), PairingOutput(One::one()))
+                            } else {
+                                (
+                                    Pairing::multi_pairing(
+                                        &pp.Gamma_1[..1 << (k - 1)],
+                                        &pp.Gamma_2[..1 << (k - 1)],
+                                    ),
+                                    Pairing::multi_pairing(
+                                        &pp.Gamma_1[1 << (k - 1)..1 << k],
+                                        &pp.Gamma_2[..1 << (k - 1)],
+                                    ),
+                                )
+                            }
+                        })
+                        .unzip()
+                },
+                || {
+                    (0..pp.max_num + 1)
+                        .into_par_iter()
+                        .map(|k| {
+                            if k == 0 {
+                                (
+                                    PairingOutput(One::one()),
+                                    Pairing::pairing(pp.Gamma_1[0], pp.Gamma_2[0]),
+                                )
+                            } else {
+                                (
+                                    Pairing::multi_pairing(
+                                        &pp.Gamma_1[..1 << (k - 1)],
+                                        &pp.Gamma_2[1 << (k - 1)..1 << k],
+                                    ),
+                                    Pairing::multi_pairing(
+                                        &pp.Gamma_1[..1 << k],
+                                        &pp.Gamma_2[..1 << k],
+                                    ),
+                                )
+                            }
+                        })
+                        .unzip()
+                },
+            );
         Self {
             Delta_1L: Delta_1L_2L.clone(),
             Delta_1R,
@@ -241,11 +234,9 @@ impl<E: Pairing> VerifierSetup<E> {
         }
     }
 
-    /// Create a new `VerifierSetup` from the public parameters and write it to a file.
-    pub fn new_to_file(
-        pp: &PublicParameters<E>, 
-        file_path: &str
-    ) -> Result<(), Box<dyn Error>> {
+    /// Create a new `VerifierSetup` from the public parameters and write it to
+    /// a file.
+    pub fn new_to_file(pp: &PublicParameters<E>, file_path: &str) -> Result<(), Box<dyn Error>> {
         let setup = Self::new(pp);
         let file = std::fs::File::create(file_path).unwrap();
         let writer = std::io::BufWriter::new(file);
@@ -253,9 +244,7 @@ impl<E: Pairing> VerifierSetup<E> {
         Ok(())
     }
 
-    pub fn read_from_file(
-        file_path: &str
-    ) -> Result<Self, Box<dyn Error>> {
+    pub fn read_from_file(file_path: &str) -> Result<Self, Box<dyn Error>> {
         let file = std::fs::File::open(file_path).unwrap();
         let reader = std::io::BufReader::new(file);
         let setup = bincode::deserialize_from(reader)?;

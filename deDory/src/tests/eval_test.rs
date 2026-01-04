@@ -6,8 +6,8 @@ use crate::eval::{compute_evaluation_vector, generate_eval_proof, verify_eval_pr
 use ark_ec::pairing::{Pairing, PairingOutput};
 use ark_ff::Field;
 use ark_std::UniformRand;
-use transcript::IOPTranscript;
 use std::{mem, time::Instant};
+use transcript::IOPTranscript;
 
 use ark_bls12_381::Bls12_381;
 
@@ -39,7 +39,6 @@ fn test_random_commitment_evaluation_proof_helper<E: Pairing>() {
         "Generating random poly and points time: {:?}",
         time.elapsed()
     );
-
 
     // Commit
     let time = Instant::now();

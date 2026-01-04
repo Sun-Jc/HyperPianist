@@ -28,12 +28,12 @@ mod witness;
 
 /// A trait for HyperPlonk SNARKs.
 /// A HyperPlonk is derived from ZeroChecks and PermutationChecks.
-pub trait HyperPlonkSNARK<E, PCS, Lookup = HyperPlonkLookupPluginNull>: PermutationCheck<E, PCS>
+pub trait HyperPlonkSNARK<E, PCS, Lookup = HyperPlonkLookupPluginNull>:
+    PermutationCheck<E, PCS>
 where
     E: Pairing,
     PCS: PolynomialCommitmentScheme<E>,
-    Lookup: HyperPlonkLookupPlugin<E, PCS,
-    Transcript = IOPTranscript<E::ScalarField>>,
+    Lookup: HyperPlonkLookupPlugin<E, PCS, Transcript = IOPTranscript<E::ScalarField>>,
 {
     type Index;
     type ProvingKey;

@@ -15,7 +15,9 @@ use hyperpianist::{
 };
 use rand::RngCore;
 use subroutines::{
-    instruction::{and::ANDInstruction, or::ORInstruction, xor::XORInstruction}, pcs::prelude::DeDory, DeDorySRS, PolyIOP, PolynomialCommitmentScheme
+    instruction::{and::ANDInstruction, or::ORInstruction, xor::XORInstruction},
+    pcs::prelude::DeDory,
+    DeDorySRS, PolyIOP, PolynomialCommitmentScheme,
 };
 
 mod common;

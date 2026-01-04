@@ -3,7 +3,7 @@ mod common;
 use crate::common::d_evaluate_mle;
 use arithmetic::{math::Math, VirtualPolynomial};
 use ark_bls12_381::Fr;
-use ark_ff::{PrimeField, UniformRand, Zero, One};
+use ark_ff::{One, PrimeField, UniformRand, Zero};
 use ark_poly::{DenseMultilinearExtension, MultilinearExtension};
 use common::test_rng;
 use std::sync::Arc;
@@ -97,8 +97,9 @@ fn test_generic_zerocheck(nv: usize) -> Result<(), PolyIOPErrors> {
         .map(|poly| Arc::new(DenseMultilinearExtension::clone(poly)))
         .collect::<Vec<_>>();
 
-    let combine_func =
-        |sid: Fr, evals: &[Fr]| evals[0] * evals[1] * evals[2] + evals[4] + evals[3] - sid + Fr::one();
+    let combine_func = |sid: Fr, evals: &[Fr]| {
+        evals[0] * evals[1] * evals[2] + evals[4] + evals[3] - sid + Fr::one()
+    };
 
     let num_party_vars = Net::n_parties().log_2();
     let zerocheck_r = if Net::am_master() {
@@ -148,7 +149,8 @@ fn test_generic_zerocheck(nv: usize) -> Result<(), PolyIOPErrors> {
             .iter()
             .enumerate()
             .map(|(i, r)| Fr::from_u64((1 << (i + 1)) as u64).unwrap() * r)
-            .sum::<Fr>() + Fr::one();
+            .sum::<Fr>()
+            + Fr::one();
         assert_eq!(combine_func(sid_eval, &evals), claimed_eval);
     } else {
         for poly in &polys_clone {

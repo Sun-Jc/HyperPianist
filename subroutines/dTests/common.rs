@@ -3,9 +3,9 @@ use deNetwork::{DeMultiNet as Net, DeNet, DeSerNet};
 
 use ark_ff::PrimeField;
 use ark_poly::{DenseMultilinearExtension, MultilinearExtension};
+use rand::{rngs::StdRng, SeedableRng};
 use std::{ops::FnOnce, path::PathBuf, sync::Arc};
 use structopt::StructOpt;
-use rand::{rngs::StdRng, SeedableRng};
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
@@ -40,29 +40,40 @@ pub(super) fn d_evaluate<F: PrimeField>(
         let nv = point.len() - num_party_vars;
         Net::recv_from_master_uniform(Some(point[..nv].to_vec()));
 
-        let evals = poly.flattened_ml_extensions.iter()
+        let evals = poly
+            .flattened_ml_extensions
+            .iter()
             .map(|mle| mle.evaluate(&point[..nv]).unwrap())
             .collect::<Vec<_>>();
 
         let evals = Net::send_to_master(&evals).unwrap();
         let mle_evals = (0..evals[0].len())
-            .map(|mle_index| 
-                DenseMultilinearExtension::from_evaluations_vec(num_party_vars, evals.iter().map(
-                    |party_evals| party_evals[mle_index]
-                ).collect())
-                .evaluate(&point[nv..]).unwrap()
-            )
+            .map(|mle_index| {
+                DenseMultilinearExtension::from_evaluations_vec(
+                    num_party_vars,
+                    evals
+                        .iter()
+                        .map(|party_evals| party_evals[mle_index])
+                        .collect(),
+                )
+                .evaluate(&point[nv..])
+                .unwrap()
+            })
             .collect::<Vec<_>>();
 
-        let result = poly.products.iter()
-            .map(|(coeff, indices)| *coeff * indices.iter().map(
-                |index| mle_evals[*index]
-            ).product::<F>())
+        let result = poly
+            .products
+            .iter()
+            .map(|(coeff, indices)| {
+                *coeff * indices.iter().map(|index| mle_evals[*index]).product::<F>()
+            })
             .sum();
         Some(result)
     } else {
         let point = Net::recv_from_master_uniform::<Vec<F>>(None);
-        let evals = poly.flattened_ml_extensions.iter()
+        let evals = poly
+            .flattened_ml_extensions
+            .iter()
             .map(|mle| mle.evaluate(&point).unwrap())
             .collect::<Vec<_>>();
         Net::send_to_master(&evals);

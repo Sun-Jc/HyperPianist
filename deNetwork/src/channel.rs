@@ -1,10 +1,9 @@
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use digest::Digest;
 use rand::RngCore;
-use sha2::Sha256;
-use std::cell::Cell;
-use std::mem::take;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use sha2::Sha256;
+use std::{cell::Cell, mem::take};
 
 use super::two as net_two;
 
@@ -35,9 +34,13 @@ pub trait DeSerNet: DeNet {
     }
 
     #[inline]
-    fn recv_from_master<T: CanonicalDeserialize + CanonicalSerialize + Default>(out: Option<Vec<T>>) -> T {
+    fn recv_from_master<T: CanonicalDeserialize + CanonicalSerialize + Default>(
+        out: Option<Vec<T>>,
+    ) -> T {
         if Self::am_master() {
-           let bytes = out.as_ref().unwrap()
+            let bytes = out
+                .as_ref()
+                .unwrap()
                 .par_iter()
                 .map(|out| {
                     let mut bytes_out = Vec::new();
@@ -54,10 +57,15 @@ pub trait DeSerNet: DeNet {
     }
 
     #[inline]
-    fn recv_from_master_uniform<T: CanonicalDeserialize + CanonicalSerialize + Default>(out: Option<T>) -> T {
+    fn recv_from_master_uniform<T: CanonicalDeserialize + CanonicalSerialize + Default>(
+        out: Option<T>,
+    ) -> T {
         if Self::am_master() {
             let mut bytes_out = Vec::new();
-            out.as_ref().unwrap().serialize_uncompressed(&mut bytes_out).unwrap();
+            out.as_ref()
+                .unwrap()
+                .serialize_uncompressed(&mut bytes_out)
+                .unwrap();
             Self::recv_bytes_from_master_uniform(Some(bytes_out));
             out.unwrap()
         } else {
@@ -95,7 +103,10 @@ pub trait DeSerNet: DeNet {
     }
 
     #[inline]
-    fn king_compute<T: CanonicalDeserialize + CanonicalSerialize + Default>(x: &T, f: impl Fn(Vec<T>) -> Vec<T>) -> T {
+    fn king_compute<T: CanonicalDeserialize + CanonicalSerialize + Default>(
+        x: &T,
+        f: impl Fn(Vec<T>) -> Vec<T>,
+    ) -> T {
         let king_response = Self::send_to_master(x).map(f);
         Self::recv_from_master(king_response)
     }
@@ -122,8 +133,8 @@ pub fn exchange<F: CanonicalSerialize + CanonicalDeserialize>(f: &F) -> F {
 #[inline]
 /// Uses commitments to simultaneously exchange values.
 ///
-/// Ensures that if both parties get a value, each party chose its value independently of the
-/// other.
+/// Ensures that if both parties get a value, each party chose its value
+/// independently of the other.
 pub fn atomic_exchange<F: CanonicalSerialize + CanonicalDeserialize>(f: &F) -> F {
     let mut bytes_out = Vec::new();
     f.serialize_compressed(&mut bytes_out).unwrap();

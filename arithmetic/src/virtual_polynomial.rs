@@ -627,12 +627,13 @@ fn build_eq_x_r_helper_with_coeff<F: PrimeField>(
 }
 
 pub fn build_eq_table<F: PrimeField>(r: &[F], coeff: F) -> Vec<Vec<F>> {
-    let mut table : Vec<Vec<F>> = Vec::with_capacity(r.len());
+    let mut table: Vec<Vec<F>> = Vec::with_capacity(r.len());
     table.push(vec![coeff]);
     for r in r.iter().skip(1).rev() {
         let last = table.last().unwrap();
         let mut evals: Vec<F> = unsafe_allocate_zero_vec(last.len() * 2);
-        evals.par_chunks_exact_mut(2)
+        evals
+            .par_chunks_exact_mut(2)
             .zip(last.par_iter())
             .for_each(|(evals, last)| {
                 evals[1] = *last * *r;

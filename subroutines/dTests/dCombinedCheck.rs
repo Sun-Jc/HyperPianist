@@ -9,9 +9,7 @@ use common::{d_evaluate_mle, test_rng};
 use deNetwork::{DeMultiNet as Net, DeNet, DeSerNet};
 use rand_core::RngCore;
 use std::sync::Arc;
-use subroutines::{
-    CombinedCheck, DeMkzg, PolyIOP, PolyIOPErrors, PolynomialCommitmentScheme
-};
+use subroutines::{CombinedCheck, DeMkzg, PolyIOP, PolyIOPErrors, PolynomialCommitmentScheme};
 
 fn generate_polys<R: RngCore>(
     num_witnesses: usize,

@@ -4,8 +4,7 @@ use ark_ec::pairing::{Pairing, PairingOutput};
 use ark_ff::Field;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use num_traits::Zero;
-use std::mem;
-use std::mem::take;
+use std::{mem, mem::take};
 use thiserror::Error;
 use transcript::IOPTranscript;
 
@@ -32,9 +31,9 @@ pub struct DoryEvalProof<E: Pairing> {
     pub GT_messages: Vec<PairingOutput<E>>,
 
     pub F_read_index: usize,
-    pub G1_read_index : usize,
-    pub G2_read_index : usize,
-    pub GT_read_index : usize,
+    pub G1_read_index: usize,
+    pub G2_read_index: usize,
+    pub GT_read_index: usize,
 }
 
 impl_serde_for_ark_serde_checked!(DoryEvalProof);

@@ -1,6 +1,6 @@
 use ark_ec::pairing::Pairing;
 use ark_poly::DenseMultilinearExtension;
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::log2;
 use deNetwork::{DeMultiNet as Net, DeNet, DeSerNet};
 use std::{iter::zip, marker::PhantomData, sync::Arc};

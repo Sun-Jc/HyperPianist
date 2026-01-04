@@ -4,13 +4,13 @@
 // You should have received a copy of the MIT License
 // along with the HyperPlonk library. If not, see <https://mit-license.org/>.
 
+mod deMultilinear_kzg;
 mod dory;
 mod dummy;
 mod errors;
 mod multilinear_kzg;
 mod structs;
 mod univariate_kzg;
-mod deMultilinear_kzg;
 
 pub mod prelude;
 

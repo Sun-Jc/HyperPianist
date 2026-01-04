@@ -17,8 +17,7 @@ use crate::{
         PolynomialCommitmentScheme,
     },
     poly_iop::{prelude::SumCheck, PolyIOP},
-    IOPProof,
-    BatchProof,
+    BatchProof, IOPProof,
 };
 use arithmetic::{build_eq_x_r_vec, DenseMultilinearExtension, VPAuxInfo, VirtualPolynomial};
 use ark_ec::{pairing::Pairing, scalar_mul::variable_base::VariableBaseMSM, CurveGroup};
@@ -115,7 +114,13 @@ where
     let step = start_timer!(|| "add mle");
     let mut sum_check_vp = VirtualPolynomial::new(num_var);
     for (merged_tilde_g, tilde_eq) in merged_tilde_gs.iter().zip(tilde_eqs.into_iter()) {
-        sum_check_vp.add_mle_list([Arc::new(DenseMultilinearExtension::clone(&merged_tilde_g)), tilde_eq], E::ScalarField::one())?;
+        sum_check_vp.add_mle_list(
+            [
+                Arc::new(DenseMultilinearExtension::clone(&merged_tilde_g)),
+                tilde_eq,
+            ],
+            E::ScalarField::one(),
+        )?;
     }
     end_timer!(step);
 

@@ -176,28 +176,33 @@ where
             Polynomial = Arc<DenseMultilinearExtension<E::ScalarField>>,
         >,
     {
-        let ((E_commitment, E_advice), ((dim_commitment, dim_advice), (m_commitment, m_advice)))
-        :  ((Vec<_>, Vec<_>), ((Vec<_>, Vec<_>), (Vec<_>, Vec<_>))) =
-            rayon::join(|| 
+        let ((E_commitment, E_advice), ((dim_commitment, dim_advice), (m_commitment, m_advice))): (
+            (Vec<_>, Vec<_>),
+            ((Vec<_>, Vec<_>), (Vec<_>, Vec<_>)),
+        ) = rayon::join(
+            || {
                 self.E_polys
                     .par_iter()
                     .map(|poly| PCS::commit(pcs_params, poly).unwrap())
-                    .unzip(),
-                    || rayon::join(
-                        || {
-                            self.dim
-                                .par_iter()
-                                .map(|poly| PCS::commit(pcs_params, poly).unwrap())
-                                .unzip()
-                        },
-                        || {
-                            self.m
-                                .par_iter()
-                                .map(|poly| PCS::commit(pcs_params, poly).unwrap())
-                                .unzip()
-                        },
-                    )
-            );
+                    .unzip()
+            },
+            || {
+                rayon::join(
+                    || {
+                        self.dim
+                            .par_iter()
+                            .map(|poly| PCS::commit(pcs_params, poly).unwrap())
+                            .unzip()
+                    },
+                    || {
+                        self.m
+                            .par_iter()
+                            .map(|poly| PCS::commit(pcs_params, poly).unwrap())
+                            .unzip()
+                    },
+                )
+            },
+        );
 
         (
             SurgeCommitmentPrimary {

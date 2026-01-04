@@ -4,10 +4,10 @@
 // You should have received a copy of the MIT License
 // along with the HyperPlonk library. If not, see <https://mit-license.org/>.
 
+use crate::{IOPProof, PolynomialCommitmentScheme};
 use ark_ec::pairing::Pairing;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use derivative::Derivative;
-use crate::{PolynomialCommitmentScheme, IOPProof};
 
 #[derive(Derivative, CanonicalSerialize, CanonicalDeserialize)]
 #[derivative(

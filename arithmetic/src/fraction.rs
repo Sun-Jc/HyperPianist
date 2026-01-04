@@ -1,7 +1,7 @@
-use ark_ff::PrimeField;
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
-use std::ops::{Add, Sub, Mul};
 use crate::OptimizedMul;
+use ark_ff::PrimeField;
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use std::ops::{Add, Mul, Sub};
 
 #[derive(CanonicalSerialize, CanonicalDeserialize, Copy, Clone, Debug, PartialEq)]
 pub struct Fraction<F: PrimeField> {

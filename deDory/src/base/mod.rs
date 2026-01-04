@@ -11,6 +11,6 @@
 mod serialize;
 pub(crate) use serialize::{impl_serde_for_ark_serde_checked, impl_serde_for_ark_serde_unchecked};
 // pub(crate) mod slice_ops;
-pub mod rand_util;
-pub mod pairings;
 pub(crate) mod deferred_msm;
+pub mod pairings;
+pub mod rand_util;

@@ -597,14 +597,13 @@ mod test {
         let mut transcript =
             <PolyIOP<E::ScalarField> as PermutationCheck<E, PCS>>::init_transcript();
         transcript.append_message(b"testing", b"initializing transcript for testing")?;
-        let (proof, _, _, h_polys) =
-            <PolyIOP<E::ScalarField> as PermutationCheck<E, PCS>>::prove(
-                pcs_param,
-                fxs,
-                gxs,
-                perms,
-                &mut transcript,
-            )?;
+        let (proof, _, _, h_polys) = <PolyIOP<E::ScalarField> as PermutationCheck<E, PCS>>::prove(
+            pcs_param,
+            fxs,
+            gxs,
+            perms,
+            &mut transcript,
+        )?;
 
         // verifier
         let mut transcript =

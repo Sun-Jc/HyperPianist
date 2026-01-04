@@ -213,9 +213,7 @@ fn test_permutation_check_helper<
                 let h_eval = d_evaluate_mle(&h_polys[i], Some(&subclaim.sumcheck_point)).unwrap();
                 let mut perm_evals = perms[offset..offset + len]
                     .iter()
-                    .map(|perm| {
-                        d_evaluate_mle(perm, Some(&subclaim.sumcheck_point)).unwrap()
-                    })
+                    .map(|perm| d_evaluate_mle(perm, Some(&subclaim.sumcheck_point)).unwrap())
                     .collect::<Vec<_>>();
 
                 f_openings.append(&mut f_evals);

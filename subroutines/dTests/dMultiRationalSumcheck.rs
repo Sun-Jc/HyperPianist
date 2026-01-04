@@ -1,5 +1,6 @@
 mod common;
 
+use arithmetic::eq_eval;
 use ark_bls12_381::Fr;
 use ark_ff::batch_inversion;
 use ark_poly::DenseMultilinearExtension;
@@ -8,7 +9,6 @@ use common::{d_evaluate_mle, test_rng};
 use rand::RngCore;
 use std::sync::Arc;
 use subroutines::{MultiRationalSumcheck, PolyIOP, PolyIOPErrors};
-use arithmetic::eq_eval;
 
 use deNetwork::{DeMultiNet as Net, DeNet, DeSerNet};
 

@@ -4,10 +4,12 @@ use itertools::Itertools;
 use num_traits::One;
 
 #[derive(Debug, Clone)]
-/// A wrapper around a Multi-Scalar Multiplication (MSM) that defers the computation until the end.
-/// This can be a mostly drop-in replace to a group element.
+/// A wrapper around a Multi-Scalar Multiplication (MSM) that defers the
+/// computation until the end. This can be a mostly drop-in replace to a group
+/// element.
 pub struct DeferredMSM<G, F> {
-    /// pairs of group elements and optional scalars that ultimately form the final msm
+    /// pairs of group elements and optional scalars that ultimately form the
+    /// final msm
     pairs: Vec<(G, Option<F>)>,
 }
 
